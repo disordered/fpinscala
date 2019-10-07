@@ -95,7 +95,7 @@ object List { // `List` companion object. Contains functions for creating and wo
     foldLeft(l, Nil: List[A])((l, h) => Cons(h, l))
   }
 
-  def append[A](l1: List[A], l2: List[A]): List[A] = {
+  def append2[A](l1: List[A], l2: List[A]): List[A] = {
     foldRight(l1, l2)(Cons(_, _))
   }
 
