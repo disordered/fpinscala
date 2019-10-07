@@ -107,6 +107,10 @@ object List { // `List` companion object. Contains functions for creating and wo
     foldRight(l, Nil: List[Int])((h, l) => Cons(h + 1, l))
   }
 
+  def doubleToString(l: List[Double]): List[String] = {
+    foldLeft(l, Nil: List[String])((l, h) => Cons(h.toString, l))
+  }
+
   def main(args: Array[String]): Unit = {
     println(reverse(List(1,2,3,4)))
   }
