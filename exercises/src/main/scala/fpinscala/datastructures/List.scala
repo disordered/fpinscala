@@ -103,6 +103,10 @@ object List { // `List` companion object. Contains functions for creating and wo
     foldRight(l, Nil: List[A])(append)
   }
 
+  def add1(l: List[Int]): List[Int] = {
+    foldRight(l, Nil: List[Int])((h, l) => Cons(h + 1, l))
+  }
+
   def main(args: Array[String]): Unit = {
     println(reverse(List(1,2,3,4)))
   }
