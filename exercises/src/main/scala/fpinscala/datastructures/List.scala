@@ -115,10 +115,10 @@ object List { // `List` companion object. Contains functions for creating and wo
     println(reverse(List(1,2,3,4)))
   }
   def map[A,B](l: List[A])(f: A => B): List[B] = {
-    foldLeft(l, Nil: List[B])((l, h) => Cons(f(h), l))
+    foldRight(l, Nil: List[B])((h, l) => Cons(f(h), l))
   }
 
   def filter[A](as: List[A])(f: A => Boolean): List[A] = {
-    foldLeft(as, Nil: List[A])((l, h) => if (f(h)) Cons(h, l) else l)
+    foldRight(as, Nil: List[A])((h, l) => if (f(h)) Cons(h, l) else l)
   }
 }
