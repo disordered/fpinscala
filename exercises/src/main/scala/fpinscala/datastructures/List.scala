@@ -114,5 +114,7 @@ object List { // `List` companion object. Contains functions for creating and wo
   def main(args: Array[String]): Unit = {
     println(reverse(List(1,2,3,4)))
   }
-  def map[A,B](l: List[A])(f: A => B): List[B] = ???
+  def map[A,B](l: List[A])(f: A => B): List[B] = {
+    foldLeft(l, Nil: List[B])((l, h) => Cons(f(h), l))
+  }
 }
