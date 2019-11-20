@@ -1,5 +1,7 @@
 package fpinscala.datastructures
 
+import scala.concurrent.{Await, ExecutionContext, Future}
+
 sealed trait List[+A] // `List` data type, parameterized on a type, `A`
 case object Nil extends List[Nothing] // A `List` data constructor representing the empty list
 /* Another data constructor, representing nonempty lists. Note that `tail` is another `List[A]`,
@@ -112,7 +114,12 @@ object List { // `List` companion object. Contains functions for creating and wo
   }
 
   def main(args: Array[String]): Unit = {
-    println(reverse(List(1,2,3,4)))
+    println(hasSubsequence(List(1,2,3,4), List(1,2)))
+    println(hasSubsequence(List(1,2,3,4), List(2,3)))
+    println(hasSubsequence(List(1,2,3,4), List(4)))
+    println(hasSubsequence(List(1,2,3,4), List(2,1)))
+    println(hasSubsequence(List(1,2,3,4), Nil))
+    println(hasSubsequence(Nil, Nil))
   }
   def map[A,B](l: List[A])(f: A => B): List[B] = {
     foldRight(l, Nil: List[B])((h, l) => Cons(f(h), l))
@@ -145,4 +152,16 @@ object List { // `List` companion object. Contains functions for creating and wo
       case (_, Nil) => Nil
     }
   }
+
+  def startsWith[A](list: List[A], prefix: List[A]): Boolean = (list, prefix) match {
+      case (_, Nil) => true
+      case (Cons(lh, lt), Cons(ph, pt)) if lh == ph => startsWith(lt, pt)
+      case _ => false
+    }
+
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = sup match {
+      case Nil => sub == Nil
+      case _ if startsWith(sup, sub) => true
+      case Cons(_, tail) => hasSubsequence(tail, sub)
+    }
 }
