@@ -22,8 +22,13 @@ object Tree {
     case _ => 0
   }
 
+  def map[A,B](tree: Tree[A])(f: A => B): Tree[B] = tree match {
+    case Branch(left, right) => Branch(map(left)(f), map(right)(f))
+    case Leaf(value) => Leaf(f(value))
+  }
+
   def main(args: Array[String]) = {
-    println(depth(Leaf(1)))
-    println(depth(Branch(Leaf(3), Branch(Leaf(2), Branch(Leaf(1), Leaf(1))))))
+    println(map(Leaf(1))(_.toFloat))
+    println(map(Branch(Leaf(3), Branch(Leaf(2), Branch(Leaf(1), Leaf(1)))))(_.toFloat))
   }
 }
