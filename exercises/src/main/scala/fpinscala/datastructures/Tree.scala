@@ -12,8 +12,13 @@ object Tree {
       case _ => 1
     }
 
+  def maximum(tree: Tree[Int]): Int = tree match {
+    case Branch(left, right) => maximum(left) max maximum(right)
+    case Leaf(value) => value
+  }
+
   def main(args: Array[String]) = {
-    println(size(Leaf(1)))
-    println(size(Branch(Leaf(1), Branch(Leaf(1), Leaf(1)))))
+    println(maximum(Leaf(1)))
+    println(maximum(Branch(Leaf(3), Branch(Leaf(2), Leaf(1)))))
   }
 }
