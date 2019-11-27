@@ -26,8 +26,28 @@ object Tree {
     case Leaf(value)         => Leaf(f(value))
   }
 
+  def fold[A, B](tree: Tree[A])(a: A => B)(f: (B, B) => B): B = tree match {
+    case Leaf(value)         => a(value)
+    case Branch(left, right) => f(fold(left)(a)(f), fold(right)(a)(f))
+  }
+
+  def sizeViaFold[A](tree: Tree[A]): Int = fold(tree)(_ => 1)(1 + _ + _)
+
+  def maximumViaFold(tree: Tree[Int]): Int = fold(tree)(i => i)(_ max _)
+
+  def depthViaFold[A](tree: Tree[A]): Int =
+    fold(tree)(_ => 0)((l, r) => 1 + (l max r))
+
   def main(args: Array[String]) = {
-    println(map(Leaf(1))(_.toFloat))
-    println(map(Branch(Leaf(3), Branch(Leaf(2), Branch(Leaf(1), Leaf(1)))))(_.toFloat))
+    println(sizeViaFold(Leaf(1)))
+    println(sizeViaFold(Branch(Leaf(1), Branch(Leaf(1), Leaf(1)))))
+
+    println(maximumViaFold(Leaf(1)))
+    println(maximumViaFold(Branch(Leaf(3), Branch(Leaf(2), Leaf(1)))))
+
+    println(depthViaFold(Leaf(1)))
+    println(
+      depthViaFold(Branch(Leaf(3), Branch(Leaf(2), Branch(Leaf(1), Leaf(1)))))
+    )
   }
 }
