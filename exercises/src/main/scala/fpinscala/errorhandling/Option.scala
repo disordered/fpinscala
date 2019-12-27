@@ -51,11 +51,14 @@ object Option {
   def sequence[A](a: List[Option[A]]): Option[List[A]] =
     a.foldRight[Option[List[A]]](Some(Nil))((x, y) => map2(x, y)(_ :: _))
 
-  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = ???
+  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] =
+    a.foldRight[Option[List[B]]](Some(Nil))((x, y) => map2(f(x), y)(_ :: _))
+
+  def sequenceViaTraverse[A](a: List[Option[A]]): Option[List[A]] = traverse(a)(x => x)
 
   def main(args: Array[String]): Unit = {
-    println(sequence(List()))
-    println(sequence(List(Some(1), None: Option[Int])))
-    println(sequence(List(Some(1), Some(2), Some(3))))
+    println(sequenceViaTraverse(List()))
+    println(sequenceViaTraverse(List(Some(1), None: Option[Int])))
+    println(sequenceViaTraverse(List(Some(1), Some(2), Some(3))))
   }
 }
