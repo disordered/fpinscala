@@ -19,9 +19,16 @@ trait Stream[+A] {
     case Empty => None
     case Cons(h, t) => if (f(h())) Some(h()) else t().find(f)
   }
-  def take(n: Int): Stream[A] = ???
+  def take(n: Int): Stream[A] = this match {
+    case Cons(h, t) if n > 1 => cons(h(), t().take(n - 1))
+    case Cons(h, _) if n == 1 => cons(h(), empty)
+    case _ => empty
+  }
 
-  def drop(n: Int): Stream[A] = ???
+  def drop(n: Int): Stream[A] = this match {
+    case Cons(_, t) if n > 0 => t().drop(n - 1)
+    case _ => this
+  }
 
   def takeWhile(p: A => Boolean): Stream[A] = ???
 
@@ -41,7 +48,7 @@ case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]
 
 object Stream {
   def main(args: Array[String]): Unit = {
-    println(Stream(1, 2, 3, 4).toList)
+    println(Stream(1, 2, 3, 4).drop(2).toList)
   }
   def cons[A](hd: => A, tl: => Stream[A]): Stream[A] = {
     lazy val head = hd
