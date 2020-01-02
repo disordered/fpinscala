@@ -1,6 +1,8 @@
 package fpinscala.laziness
 
 import Stream._
+
+import scala.annotation.tailrec
 trait Stream[+A] {
 
   def foldRight[B](z: => B)(f: (A, => B) => B): B = // The arrow `=>` in front of the argument type `B` means that the function `f` takes its second argument by name and may choose not to evaluate it.
@@ -31,11 +33,16 @@ trait Stream[+A] {
   // writing your own function signatures.
 
   def startsWith[B](s: Stream[B]): Boolean = ???
+
+  def toList: List[A] = foldRight(Nil: List[A])(_ :: _)
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]
 
 object Stream {
+  def main(args: Array[String]): Unit = {
+    println(Stream(1, 2, 3, 4).toList)
+  }
   def cons[A](hd: => A, tl: => Stream[A]): Stream[A] = {
     lazy val head = hd
     lazy val tail = tl
