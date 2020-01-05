@@ -35,7 +35,7 @@ trait Stream[+A] {
     case _ => empty
   }
 
-  def forAll(p: A => Boolean): Boolean = ???
+  def forAll(p: A => Boolean): Boolean = this.foldRight(true)((a, b) => p(a) && b)
 
   def headOption: Option[A] = ???
 
@@ -51,7 +51,7 @@ case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]
 
 object Stream {
   def main(args: Array[String]): Unit = {
-    println(Stream(1, 2, 3, 4).takeWhile(_ < 3).toList)
+    println(Stream(1, 2, 3, 4).forAll(_ == 1))
   }
   def cons[A](hd: => A, tl: => Stream[A]): Stream[A] = {
     lazy val head = hd
