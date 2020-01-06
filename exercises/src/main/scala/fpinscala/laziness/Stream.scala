@@ -44,6 +44,14 @@ trait Stream[+A] {
   // 5.7 map, filter, append, flatmap using foldRight. Part of the exercise is
   // writing your own function signatures.
 
+  def map[B](f: A => B): Stream[B] = this.foldRight(empty[B])((a, b) => cons(f(a), b))
+
+  def filter(p: A => Boolean): Stream[A] = this.foldRight(empty[A])((a, b) => if (p(a)) cons(a, b) else b)
+
+  def append[B >: A](s: => Stream[B]): Stream[B] = this.foldRight(s)((a, b) => cons(a, b))
+
+  def flatMap[B](f: A => Stream[B]): Stream[B] = this.foldRight(empty[B])((a, b) => f(a).append(b))
+
   def startsWith[B](s: Stream[B]): Boolean = ???
 
   def toList: List[A] = foldRight(Nil: List[A])(_ :: _)
@@ -53,7 +61,9 @@ case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]
 
 object Stream {
   def main(args: Array[String]): Unit = {
-    println(Stream(1, 2, 3, 4).headOption)
+    println(Stream(1, 2, 3, 4).filter(Set(1, 2, 4).contains).toList)
+    println(Stream(1, 2, 3, 4).append(Stream(0)).toList)
+    println(Stream(1, 2, 3, 4).flatMap(a => Stream(a, a)).toList)
     println(Stream().headOption)
   }
   def cons[A](hd: => A, tl: => Stream[A]): Stream[A] = {
