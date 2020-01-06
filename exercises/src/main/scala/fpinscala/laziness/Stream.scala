@@ -39,7 +39,7 @@ trait Stream[+A] {
 
   def takeWhileViaFold(p: A => Boolean): Stream[A] = this.foldRight(empty[A])((a, b) => if (p(a)) cons(a, b) else empty)
 
-  def headOption: Option[A] = ???
+  def headOption: Option[A] = this.foldRight(None: Option[A])((a, _) => Some(a))
 
   // 5.7 map, filter, append, flatmap using foldRight. Part of the exercise is
   // writing your own function signatures.
@@ -53,7 +53,8 @@ case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]
 
 object Stream {
   def main(args: Array[String]): Unit = {
-    println(Stream(1, 2, 3, 4).takeWhile(Set(1, 2, 4).contains).toList)
+    println(Stream(1, 2, 3, 4).headOption)
+    println(Stream().headOption)
   }
   def cons[A](hd: => A, tl: => Stream[A]): Stream[A] = {
     lazy val head = hd
