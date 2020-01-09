@@ -61,10 +61,7 @@ case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]
 
 object Stream {
   def main(args: Array[String]): Unit = {
-    println(Stream(1, 2, 3, 4).filter(Set(1, 2, 4).contains).toList)
-    println(Stream(1, 2, 3, 4).append(Stream(0)).toList)
-    println(Stream(1, 2, 3, 4).flatMap(a => Stream(a, a)).toList)
-    println(Stream().headOption)
+    println(Stream.constant(2).take(3).toList)
   }
   def cons[A](hd: => A, tl: => Stream[A]): Stream[A] = {
     lazy val head = hd
@@ -79,6 +76,9 @@ object Stream {
     else cons(as.head, apply(as.tail: _*))
 
   val ones: Stream[Int] = Stream.cons(1, ones)
+
+  def constant(n: Int): Stream[Int] = Stream.cons(n, constant(n))
+
   def from(n: Int): Stream[Int] = ???
 
   def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = ???
