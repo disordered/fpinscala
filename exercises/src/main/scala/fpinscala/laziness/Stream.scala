@@ -1,7 +1,6 @@
 package fpinscala.laziness
 
 import Stream._
-
 import scala.annotation.tailrec
 trait Stream[+A] {
 
@@ -55,13 +54,41 @@ trait Stream[+A] {
   def startsWith[B](s: Stream[B]): Boolean = ???
 
   def toList: List[A] = foldRight(Nil: List[A])(_ :: _)
+
+  def mapViaUnfold[B](f: A => B): Stream[B] = Stream.unfold(this){
+    case Cons(h, t) => Some(f(h()), t())
+    case _ => None
+  }
+
+  def takeViaUnfold(n: Int): Stream[A] = Stream.unfold((this, n)){
+    case (Cons(h, t), n) if n > 1 => Some(h(), (t(), n - 1))
+    case (Cons(h, _), 1) => Some(h(), (empty, 0))
+    case _ => None
+  }
+
+  def takeWhileViaUnfold(p: A => Boolean): Stream[A] = Stream.unfold(this){
+    case Cons(h, t) if p(h()) => Some(h(), t())
+    case _ => None
+  }
+
+  def zipWithViaUnfold[B, C](s: Stream[B])(f: (A, B) => C): Stream[C] = Stream.unfold((this, s)){
+    case (Cons(h1, t1), Cons(h2, t2)) => Some(f(h1(), h2()), (t1(), t2()))
+    case _ => None
+  }
+
+  def zipAll[B](s2: Stream[B]): Stream[(Option[A],Option[B])] = unfold((this, s2)){
+    case (Cons(h1, t1), Cons(h2, t2)) => Some(((Some(h1()), Some(h2())), (t1(), t2())))
+    case (Cons(h1, t1), empty) => Some((Some(h1()), None), (t1(), empty))
+    case (empty, Cons(h2, t2)) => Some((None, Some(h2())), (empty, t2()))
+    case _ => None
+  }
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]
 
 object Stream {
   def main(args: Array[String]): Unit = {
-    println(Stream.onesViaUnfold.take(8).toList)
+    println(Stream(1, 2, 3, 4).zipAll(Stream(1, 2, 3, 4, 5)).takeViaUnfold(5).toList)
   }
   def cons[A](hd: => A, tl: => Stream[A]): Stream[A] = {
     lazy val head = hd
